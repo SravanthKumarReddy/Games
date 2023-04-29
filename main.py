@@ -36,19 +36,15 @@ for i in range(number_of_villains):
     villain_position_x.append(0.5)
     villain_position_y.append(0)
 
-# villain 2
-villain_icon2 = []
-villain2x = []
-villain2y = []
-villain_position_2x = []
-villain_position_2y = []
-for i in range(number_of_villains):
-    villain_icon2.append(pygame.image.load("alien.png"))
-    villain2x.append(random.randint(0, 1048))
-    villain2y.append(random.randint(50, 200))
-    villain_position_2x.append(0.5)
-    villain_position_2y.append(0)
 
+number_of_other_villains=5
+for i in range(number_of_other_villains):
+    villain_icon.append(pygame.image.load("alien.png"))
+    villainx.append(random.randint(0, 1048))
+    villainy.append(random.randint(50, 200))
+    villain_position_x.append(0.5)
+    villain_position_y.append(0)
+villains = number_of_villains + number_of_other_villains
 
 # laser
 laser_icon = pygame.image.load("Laser.png")
@@ -85,10 +81,6 @@ def player(x, y):
 def villain(x, y, i):
     screen.blit(villain_icon[i], (x, y))
 
-def villain2(x, y, i):
-    screen.blit(villain_icon2[i], (x, y))
-
-
 def laser_fire(x, y):
     global laser_state
     laser_state = "fire"
@@ -98,15 +90,6 @@ def laser_fire(x, y):
 def collision(villainx, villainy, laserx, lasery):
     distance = math.sqrt(
         (math.pow(villainx - laserx, 2)) + (math.pow(villainy - lasery, 2))
-    )
-    if distance < 16:
-        return True
-    else:
-        return False
-
-def collision2(villain2x, villain2y, laserx, lasery):
-    distance = math.sqrt(
-        (math.pow(villain2x - laserx, 2)) + (math.pow(villain2y - lasery, 2))
     )
     if distance < 16:
         return True
@@ -149,11 +132,11 @@ while running:
         playerx = 0
     elif playerx >= 1016:
         playerx = 1016
-    for i in range(number_of_villains):
-        if villainy[i] > 500 or villain2y[i]>500:
-            for j in range(number_of_villains):
+    for i in range(villains):
+        if villainy[i] > 500:
+            for j in range(villains):
                 villainy[j] = 2000
-                villain2y[j] = 2000
+
             game_over()
             break
         villainx[i] += villain_position_x[i]
@@ -167,17 +150,6 @@ while running:
             villain_position_x[i] = -0.5
             if villainx[i] == 1048:
                 villainy[i] += 50
-        villain2x[i] += villain_position_2x[i]
-        if villain2x[i] < 0:
-            villain2x[i] = 0
-            villain_position_2x[i] = 0.5
-            if villain2x[i] == 0:
-                villain2y[i] += 50
-        elif villain2x[i] >= 1048:
-            villain2x[i] = 1048
-            villain_position_2x[i] = -0.5
-            if villain2x[i] == 1048:
-                villain2y[i] += 50
         collis = collision(villainx[i], villainy[i], laserx, lasery)
         if collis:
             explosion_sound = mixer.Sound("explosion.wav")
@@ -188,19 +160,9 @@ while running:
             villainx[i] = random.randint(0, 1048)
             villainy[i] = random.randint(50, 200)
         villain(villainx[i], villainy[i], i)
-        colli = collision2(villain2x[i], villain2y[i], laserx, lasery)
-        if colli:
-            explosion_sound = mixer.Sound("explosion.wav")
-            explosion_sound.play()
-            lasery = 550
-            laser_state = "ready"
-            score += 1
-            villain2x[i] = random.randint(0, 1048)
-            villain2y[i] = random.randint(50, 200)
-        villain2(villain2x[i], villain2y[i], i)
-            
+    
     if lasery <= 0:
-        lasery = 550
+        lasery = playery
         laser_state = "ready"
     if laser_state is "fire":
         laser_fire(laserx, lasery)
@@ -209,3 +171,5 @@ while running:
     player(playerx, playery)
     show_score(testx, testy)
     pygame.display.update()
+
+
